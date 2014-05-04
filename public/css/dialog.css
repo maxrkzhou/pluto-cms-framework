@@ -1,0 +1,20 @@
+@charset "utf-8";
+/* CSS Document */
+#renameBox { 
+	display: none; 
+}
+
+
+#deleteBox{
+	display: none;	
+}
+
+#createBox{
+	display: none;
+}
+
+#filepanel{
+	
+	margin-left:30px;
+	
+}

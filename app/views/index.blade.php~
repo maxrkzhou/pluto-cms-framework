@@ -1,0 +1,32 @@
+@extends('master')
+
+@section('header')
+<a href="#"><img src="http://www.pluto.com.au/images/logowithtagline.png" alt="Insert Logo Here" name="Insert_logo" width="20%" height="90" id="Insert_logo" style="background-color: #8090AB; display:block;" /></a>
+@stop
+
+@section('sidebar')
+<div class="sidebar1">
+ 		<?php
+
+			if($contentDisplay->isFile()){
+		?>
+        	<ul class="nav">
+				<li><a href="#" class="back" onclick="intepreteDir('<?php echo $dir; ?>','..')"><img src='img/back.png' height='20' width='20'/> back</a></li>
+			</ul>
+		<?php
+			}
+			else{
+				$filesNames = scandir($dir);
+				$contentDisplay->displayFiles($filesNames,$file);	
+			}
+		?>
+    <!-- end .sidebar1 --></div>
+@stop
+
+@section('content')
+
+@stop
+
+@section('footer')
+
+@stop
