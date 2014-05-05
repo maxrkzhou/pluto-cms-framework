@@ -5,16 +5,28 @@ class FilesController extends \BaseController {
 	protected $dir;
 	protected $curFile;
 	protected $fileNames;
-	protected $fileContent="aaa";
-	
+	protected $fileContent;
+	protected $fileAction;
 
 	public function __construct(){
 				
 		if(Input::get('dir')!=NULL) $this->dir = Input::get("dir");
 		else $this->dir = "/";
-		$this->curFile = Input::get('file');			
+		$this->curFile = Input::get('file');	
+		$this->initByAction(Input::get("action"));	
 	}
 
+	private function initByAction($action){
+		if($action=="newfolder"){
+			$this->fileAction = new FilesProcess(Input::get("action"),Input::get("newdir"),"","","","","");	
+			$this->fileAction->CreateFolder();
+		}
+		if($action=="newfile"){
+			$this->fileAction = new FilesProcess(Input::get("action"),Input::get("newdir"),"","","","","");	
+			$this->fileAction->CreateFile();
+		}
+	}
+	
 	
 	public function filterFileNames($dir){
 		
@@ -62,7 +74,7 @@ class FilesController extends \BaseController {
 	 * @return Response
 	 */
 	public function index()
-	{
+	{	
 		$dir = $this->dir;
 		$curFile = $this->curFile;
 		if($this->isFile()){
@@ -74,7 +86,7 @@ class FilesController extends \BaseController {
 			$fliterNames = $this->filterFileNames($dir);
 			$fileContent = "";
 		}
-		$data = array('dir'=>$dir, 'curFile'=>$curFile, 'fileNames'=>$fliterNames,'fileContent'=>$fileContent);
+		$data = array('dir'=>$dir, 'curFile'=>$curFile, 'fileNames'=>$fliterNames,'fileContent'=>$fileContent,'isFile'=>$this->isFile());
 		return View::make('index',$data);
 	}
 
@@ -86,6 +98,7 @@ class FilesController extends \BaseController {
 	public function create()
 	{
 		//
+
 	}
 
 	/**

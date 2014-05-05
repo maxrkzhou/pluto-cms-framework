@@ -283,7 +283,7 @@ function createFiles(){
 }
 
 function createFolders(){
-	$( "#createBox" ).dialog({
+	$("#createBox" ).dialog({
 			 buttons: { "Ok": function() { sendFolderName($("#create").val()); $(this).dialog("close"); },
 			"Cancel": function(){$(this).dialog("close");} 
 		} 
@@ -293,18 +293,19 @@ function createFolders(){
 }
 
 function sendFolderName(newFileName){
+
 	var dir = $("#dir").val()+"/"+newFileName;
 	$.ajax({
 	type: "GET",
-	url: "file.php",
+	url: "/",
 	data: {
 		action: "newfolder",
-		dir: dir
+		newdir: dir
 	},
   	success:function(data){
-		//alert("LOL");
-		document.getElementById("feedback").innerHTML ="";
-		$("#feedback").append(data);
+		//alert(data);
+		//document.getElementById("feedback").innerHTML ="";
+		//$("#feedback").append(data);
 		window.location.reload();
   }});	
 }
@@ -313,13 +314,13 @@ function sendFileName(newFileName){
 	var dir = $("#dir").val()+"/"+newFileName;
 	$.ajax({
 	type: "GET",
-	url: "file.php",
+	url: "/",
 	data: {
 		action: "newfile",
-		dir: dir
+		newdir: dir
 	},
   	success:function(data){
-		//alert("LOL");
+		alert("LOL");
 		document.getElementById("feedback").innerHTML ="";
 		$("#feedback").append(data);
 		window.location.reload();

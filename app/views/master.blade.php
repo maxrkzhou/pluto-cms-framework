@@ -18,9 +18,9 @@
 <!--The link for Jquery Library -->
 
 <!--The link for Jquery UI Library-->
-<script src="http://code.jquery.com/jquery-1.9.0.js"></script>
-<script src="http://code.jquery.com/jquery-migrate-1.0.0.js"></script>
-<script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+{{ HTML::style('jquery-ui-1.10.4.custom/css/mint-choc/jquery-ui-1.10.4.custom.css') }}
+{{ HTML::script('jquery-ui-1.10.4.custom/js/jquery-1.10.2.js') }}
+{{ HTML::script('jquery-ui-1.10.4.custom/js/jquery-ui-1.10.4.custom.js') }}
 <!--The link for CKEditor Library -->
 {{ HTML::script('ckeditor/ckeditor.js') }}
 
