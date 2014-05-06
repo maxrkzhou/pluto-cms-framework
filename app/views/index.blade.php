@@ -9,7 +9,7 @@
 
 				@foreach($fileNames as $fileName => $fileImg)
             		<li>
-                    	<a href="#" id="menu" onclick="intepreteDir('<?php echo $dir?>','<?php echo $fileName ?>')">
+                    	<a href="#" id="{{$fileName}}" class="{{$menuType[$fileName]}}" onclick="intepreteDir('<?php echo $dir?>','<?php echo $fileName ?>')">
 							{{HTML::image($fileImg,"",array('width'=>'20','height'=>'20'))}}
 							{{$fileName}}
                         </a>
@@ -35,7 +35,6 @@
             <input type="button" onclick="saveFile()" value="Save"/>
         </p>
     </form>	
-       <div id="feedback"></div>
     @else
     <h1>File Control Panel</h1>
 		<table id="filepanel">
@@ -44,9 +43,8 @@
         <td><img src='img/file.png' height='20' width='20'/><a href="#" onclick="createFiles()">New File</a></td>
         </tr>
         </table>
-    <div id="feedback"></div>
     @endif
-    
+    <div id="feedback"></div>
     
     		
     <div id="renameBox">
@@ -69,6 +67,46 @@
     </table>
     </div>
     
+    
+    <script>
+
+$('li').mousedown(function(event) {
+
+    switch (event.which) {
+
+        case 1://mouse left button
+
+            break;
+
+        case 2:
+
+			//leave for mouse mid button
+
+            break;
+
+        case 3:
+
+			 //$("#feedback").append(event.target.id);
+
+             getFileName(event.target.id);
+
+  			 $("#rename").val(event.target.id);	
+
+            break;
+
+        default:
+
+            alert('You have a strange mouse');
+
+    }
+
+
+
+  //console.log(txt);
+
+	});
+</script>
+
 @stop
 
 @section('footer')

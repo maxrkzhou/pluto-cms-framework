@@ -5,13 +5,6 @@ var sourceDir="";
 var actionOnFile = "";
 
 
-   
-
-function test(){
-	alert("LOL");	
-	$("#feedback").append("aaa");
-}
-
 
 function saveFile(){
 	var dir = $("#dir").val();
@@ -20,10 +13,10 @@ function saveFile(){
 
   $.ajax({
 	type: "GET",
-	url: "file.php",
+	url: "/",
 	//dataType:"json",
 	data: {
-		dir: dir,
+		newdir: dir,
 		action: "save",
 		plainontent: plainContent,
 		webcontent: webContent
@@ -166,7 +159,7 @@ function moveFiles(){
 	var destDir = $("#dir").val()+"/"+clickedFileName+"/"+sourceFileName;
 	$.ajax({
 	type: "GET",
-	url: "file.php",
+	url: "/",
 	//dataType:"json",
 	data: {
 		action: "cut",
@@ -174,9 +167,6 @@ function moveFiles(){
 		destdir: destDir
 	},
   	success:function(data){
-		//alert("LOL");
-		document.getElementById("feedback").innerHTML ="";
-		$("#feedback").append(data);
 		window.location.reload();
   }});		
 }
@@ -187,16 +177,14 @@ function copyFiles(){
 	var destDir = $("#dir").val()+"/"+clickedFileName+"/"+sourceFileName;
 	$.ajax({
 	type: "GET",
-	url: "file.php",
+	url: "/",
 	data: {
 		action: "copy",
 		sourcedir: sourceDir,
 		destdir: destDir
 	},
   	success:function(data){
-		//alert("LOL");
-		document.getElementById("feedback").innerHTML ="";
-		$("#feedback").append(data);
+
   }});	
 }
 
@@ -206,16 +194,13 @@ function renameFiles(){
 	var name = $("#dir").val()+"/"+$("#rename").val();
 	$.ajax({
 	type: "GET",
-	url: "file.php",
+	url: "/",
 	data: {
 		action: "rename",
-		dir: dir,
+		newdir: dir,
 		name: name
 	},
   	success:function(data){
-		//alert("LOL");
-		document.getElementById("feedback").innerHTML ="";
-		$("#feedback").append(data);
 		window.location.reload();
   }});	
 }
@@ -227,15 +212,12 @@ function deleteFiles(){
 	var dir = $("#dir").val()+"/"+clickedFileName;
 	$.ajax({
 	type: "GET",
-	url: "file.php",
+	url: "/",
 	data: {
 		action: "deletefile",
-		dir: dir
+		newdir: dir
 	},
   	success:function(data){
-		//alert("LOL");
-		document.getElementById("feedback").innerHTML ="";
-		$("#feedback").append(data);
 		window.location.reload();
   }});	
 	
@@ -245,15 +227,15 @@ function deleteFolders(){
 	var dir = $("#dir").val()+"/"+clickedFileName;
 	$.ajax({
 	type: "GET",
-	url: "file.php",
+	url: "/",
 	data: {
 		action: "deletefolder",
-		dir: dir
+		newdir: dir
 	},
   	success:function(data){
 		//alert("LOL");
-		document.getElementById("feedback").innerHTML ="";
-		$("#feedback").append(data);
+		//document.getElementById("feedback").innerHTML ="";
+		//$("#feedback").append(data);
 		window.location.reload();
   }});	
 	
@@ -303,9 +285,6 @@ function sendFolderName(newFileName){
 		newdir: dir
 	},
   	success:function(data){
-		//alert(data);
-		//document.getElementById("feedback").innerHTML ="";
-		//$("#feedback").append(data);
 		window.location.reload();
   }});	
 }
@@ -320,9 +299,7 @@ function sendFileName(newFileName){
 		newdir: dir
 	},
   	success:function(data){
-		alert("LOL");
-		document.getElementById("feedback").innerHTML ="";
-		$("#feedback").append(data);
+		//alert(data);
 		window.location.reload();
   }});	
 }
