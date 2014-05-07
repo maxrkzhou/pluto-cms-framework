@@ -69,42 +69,22 @@
     
     
     <script>
-
-$('li').mousedown(function(event) {
-
-    switch (event.which) {
-
-        case 1://mouse left button
-
-            break;
-
-        case 2:
-
-			//leave for mouse mid button
-
-            break;
-
-        case 3:
-
-			 //$("#feedback").append(event.target.id);
-
-             getFileName(event.target.id);
-
-  			 $("#rename").val(event.target.id);	
-
-            break;
-
-        default:
-
-            alert('You have a strange mouse');
-
-    }
-
-
-
-  //console.log(txt);
-
-	});
+		$('li').mousedown(function(event) {
+    		switch (event.which) {
+        		case 1://mouse left button
+            		break;
+        		case 2:
+				//leave for mouse mid button
+            		break;
+        		case 3:
+					getFileName(event.target.id);
+  					$("#rename").val(event.target.id);	
+            		break;
+        		default:
+            		alert('You have a strange mouse');
+					break;
+    			}
+		});
 </script>
 
 @stop

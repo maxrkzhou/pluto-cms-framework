@@ -63,7 +63,7 @@ class FilesController extends \BaseController {
 		$filterNames['back']='img/back.png';
 		$this->menuType['back'] = 'back';
 		foreach($fileNames as $key=>$fileName){
-				if($this->isHiddenFile($fileName)) continue;
+				if($this->isHiddenFile($fileName)||$this->linkCheck($fileName)) continue;
 				else if($this->fileCheck($fileName)){
 					$filterNames[$fileName] = 'img/file.png'; 
 					$this->menuType[$fileName] = 'file';
@@ -77,7 +77,14 @@ class FilesController extends \BaseController {
 		return $filterNames;		
 	}
 	
-	
+	private function linkCheck($file){
+		
+		if(filetype($this->dir.'/'.$file)=="link")
+			return true;	
+		else
+			return false;	
+		
+	}
 	
 	private function fileCheck($file){
 		

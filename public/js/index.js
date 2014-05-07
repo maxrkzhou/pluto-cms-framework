@@ -5,7 +5,6 @@ var sourceDir="";
 var actionOnFile = "";
 
 
-
 function saveFile(){
 	var dir = $("#dir").val();
 	var plainContent = CKEDITOR.instances.editor.document.getBody().getText();
@@ -125,8 +124,8 @@ $(function(){
 				getCopiedDir("copy");
 			}},
             "paste": {name: "Paste", icon: "paste", callback: function(key, opt){
-				if(actionOnFile=='copy') copyFiles();
-				if(actionOnFile=='cut') moveFiles();		
+				if($.cookie("actionOnFile")=='copy') copyFiles();
+				if($.cookie("actionOnFile")=='cut') moveFiles();		
 			}},
             "delete": {name: "Delete", icon: "delete",callback: function(key, opt){
 				$( "#deleteBox" ).dialog({
@@ -156,14 +155,14 @@ $(function(){
 /****************************************** Functionality Functions ***************************************/
 
 function moveFiles(){
-	var destDir = $("#dir").val()+"/"+clickedFileName+"/"+sourceFileName;
+	var destDir = $("#dir").val()+"/"+clickedFileName+"/"+$.cookie("srcFile");
 	$.ajax({
 	type: "GET",
 	url: "/",
 	//dataType:"json",
 	data: {
 		action: "cut",
-		sourcedir: sourceDir,
+		sourcedir: $.cookie("srcDir"),
 		destdir: destDir
 	},
   	success:function(data){
@@ -174,13 +173,15 @@ function moveFiles(){
 
 
 function copyFiles(){
-	var destDir = $("#dir").val()+"/"+clickedFileName+"/"+sourceFileName;
+	var destDir = $("#dir").val()+"/"+clickedFileName+"/"+ $.cookie("srcFile");
+	alert($.cookie("srcDir"));
+	alert(destDir);
 	$.ajax({
 	type: "GET",
 	url: "/",
 	data: {
 		action: "copy",
-		sourcedir: sourceDir,
+		sourcedir: $.cookie("srcDir"),
 		destdir: destDir
 	},
   	success:function(data){
@@ -233,9 +234,6 @@ function deleteFolders(){
 		newdir: dir
 	},
   	success:function(data){
-		//alert("LOL");
-		//document.getElementById("feedback").innerHTML ="";
-		//$("#feedback").append(data);
 		window.location.reload();
   }});	
 	
@@ -247,6 +245,9 @@ function getCopiedDir(action){
 	sourceDir = $("#dir").val()+"/"+clickedFileName;
 	sourceFileName = clickedFileName;
 	actionOnFile =	action;
+	$.cookie("srcDir", sourceDir);
+	$.cookie("srcFile", sourceFileName);
+	$.cookie("actionOnFile",action);
 }
 
 function getFileName(fileName){

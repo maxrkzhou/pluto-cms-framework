@@ -71,37 +71,28 @@ class FilesProcess extends Eloquent{
 	/* has bug when go back to parent folder can't cut!*/
 	public function CutFile($src,$dst){
 		if(isset($src,$dst)){
-			$dir = opendir($src);
-			@mkdir($dst);
-			while(false !== ( $file = readdir($dir)) ) {
-				if (( $file != '.' ) && ( $file != '..' )) {
-					if ( is_dir($src . '/' . $file) ) {
-						CutFile($src . '/' . $file,$dst . '/' . $file);
-				}
-				else {
-					rename($src . '/' . $file,$dst . '/' . $file);
-					}
-				}
+			if(is_dir($src)){
+				$dir = opendir($src);
+				@rename($src,$dst);
+				closedir($dir);
+			}else{
+				rename($src,$dst);
 			}
-			closedir($dir);
 		}
 	}	
-
-	public function CopyFile($src,$dst) {
-		if(isset($src,$dst)){
-			$dir = opendir($src);
-			@mkdir($dst);
-			while(false !== ( $file = readdir($dir)) ) {
-				if (( $file != '.' ) && ( $file != '..' )) {
-					if ( is_dir($src . '/' . $file) ) {
-						CopyFile($src . '/' . $file,$dst . '/' . $file);
-				}
-				else {
-					copy($src . '/' . $file,$dst . '/' . $file);
-					}
-				}
-			}
-			closedir($dir);
+	/* has bug when go back to parent folder can't copy!*/
+	public function CopyFile($source,$dest) {
+				
+		mkdir($dest, 0755);
+		foreach (
+		  $iterator = new RecursiveIteratorIterator(
+		  new RecursiveDirectoryIterator($source, RecursiveDirectoryIterator::SKIP_DOTS),
+		  RecursiveIteratorIterator::SELF_FIRST) as $item) {
+		  if ($item->isDir()) {
+			mkdir($dest . DIRECTORY_SEPARATOR . $iterator->getSubPathName());
+		  } else {
+			copy($item, $dest . DIRECTORY_SEPARATOR . $iterator->getSubPathName());
+		  }
 		}
 	}
 

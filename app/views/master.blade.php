@@ -16,11 +16,12 @@
 {{ HTML::style('css/dialog.css') }}
 
 <!--The link for Jquery Library -->
-
-<!--The link for Jquery UI Library-->
 {{ HTML::style('jquery-ui-1.10.4.custom/css/mint-choc/jquery-ui-1.10.4.custom.css') }}
 {{ HTML::script('jquery-ui-1.10.4.custom/js/jquery-1.10.2.js') }}
+<!--The link for Jquery UI Library-->
 {{ HTML::script('jquery-ui-1.10.4.custom/js/jquery-ui-1.10.4.custom.js') }}
+<!--The link for Jquery Cookie Plugin -->
+{{HTML::script('jquery-cookie-master/jquery.cookie.js')}}
 <!--The link for CKEditor Library -->
 {{ HTML::script('ckeditor/ckeditor.js') }}
 
