@@ -17,14 +17,10 @@ function saveFile(){
 	data: {
 		newdir: dir,
 		action: "save",
-		plainontent: plainContent,
 		webcontent: webContent
 	},
   	success:function(data){
-		//alert("LOL");
-		document.getElementById("feedback").innerHTML ="";
-		$("#feedback").append(data);
-
+		feedbackBox(data);
   }});
 
 }
@@ -44,8 +40,7 @@ function intepreteDir(dir,curFile){
 		if(dir=="/") path = dir+curFile;/*if root correct the path with only one slash*/
 		else path = dir+"/"+curFile; /*if not root simply add /+file at the end */
 	}
-
-	location.href="?dir="+path+"&file="+curFile;	
+	location.href=location.protocol + '//' + location.host + location.pathname+"?dir="+path+"&file="+curFile;	
 }
 
 /****************************************** Direction *******************************************************/
@@ -129,7 +124,7 @@ $(function(){
 			}},
             "delete": {name: "Delete", icon: "delete",callback: function(key, opt){
 				$( "#deleteBox" ).dialog({
-						 buttons: { "Ok": function() { deleteFolders(); $(this).dialog("close"); },
+						 buttons: { "Ok": function() { deleteFiles(); $(this).dialog("close"); },
 									"Cancel": function(){$(this).dialog("close");} 
 						} 
 					});
@@ -166,7 +161,7 @@ function moveFiles(){
 		destdir: destDir
 	},
   	success:function(data){
-		window.location.reload();
+		feedbackBox(data);
   }});		
 }
 
@@ -174,8 +169,6 @@ function moveFiles(){
 
 function copyFiles(){
 	var destDir = $("#dir").val()+"/"+clickedFileName+"/"+ $.cookie("srcFile");
-	alert($.cookie("srcDir"));
-	alert(destDir);
 	$.ajax({
 	type: "GET",
 	url: "/",
@@ -185,7 +178,7 @@ function copyFiles(){
 		destdir: destDir
 	},
   	success:function(data){
-
+		feedbackBox(data);
   }});	
 }
 
@@ -202,7 +195,7 @@ function renameFiles(){
 		name: name
 	},
   	success:function(data){
-		window.location.reload();
+		feedbackBox(data);
   }});	
 }
 
@@ -215,29 +208,21 @@ function deleteFiles(){
 	type: "GET",
 	url: "/",
 	data: {
-		action: "deletefile",
+		action: "delete",
 		newdir: dir
 	},
   	success:function(data){
-		window.location.reload();
-  }});	
+		feedbackBox(data);
+  }
+  ,
+   error:function (jqXHR, textStatus, errorThrown){
+        console.log("Error:" + textStatus+ "," + errorThrown);
+    }
+
+  });	
 	
 }
 
-function deleteFolders(){
-	var dir = $("#dir").val()+"/"+clickedFileName;
-	$.ajax({
-	type: "GET",
-	url: "/",
-	data: {
-		action: "deletefolder",
-		newdir: dir
-	},
-  	success:function(data){
-		window.location.reload();
-  }});	
-	
-}
 /****************************************** Right Click Menu ***************************************/
 /****************************************** Helper Functions ***************************************/
 
@@ -256,6 +241,9 @@ function getFileName(fileName){
 
 
 /***************************************** Create Files *******************************************/
+
+
+
 function createFiles(){
 	$("#create").val(".txt");
 	$( "#createBox" ).dialog({
@@ -281,13 +269,21 @@ function sendFolderName(newFileName){
 	$.ajax({
 	type: "GET",
 	url: "/",
+	dataType:"json",
 	data: {
 		action: "newfolder",
 		newdir: dir
 	},
   	success:function(data){
-		window.location.reload();
-  }});	
+		feedbackBox(data);
+
+  }
+  /*
+   error:function (jqXHR, textStatus, errorThrown){
+        console.log("Error:" + textStatus+ "," + errorThrown);
+    }
+	*/ 
+  });	
 }
 
 function sendFileName(newFileName){
@@ -295,12 +291,31 @@ function sendFileName(newFileName){
 	$.ajax({
 	type: "GET",
 	url: "/",
+	dataType:"json",
 	data: {
 		action: "newfile",
 		newdir: dir
 	},
   	success:function(data){
-		//alert(data);
-		window.location.reload();
+		feedbackBox(data);
   }});	
+}
+
+function feedbackBox(data){
+	$("#feedbackBox" ).dialog({
+			open: function(){
+				$("#contentholder").append(data.feedback);
+			},
+			 buttons: { 
+			 	"Ok": function(){
+					if(data.status==true){
+						window.location.reload(); 
+					}
+					$(this).dialog("close"); 
+				},
+				"Cancel": function(){
+					$(this).dialog("close");
+				} 
+		} 
+	});
 }

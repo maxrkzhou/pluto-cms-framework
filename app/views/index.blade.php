@@ -67,6 +67,13 @@
     </table>
     </div>
     
+    <div id="feedbackBox">
+    	<p id="contentholder"></p>
+    </div>
+    
+    <div id="overwriteBox">
+    	<p id="contentholder1"></p>
+    </div>
     
     <script>
 		$('li').mousedown(function(event) {

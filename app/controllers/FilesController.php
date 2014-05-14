@@ -1,4 +1,8 @@
 <?php
+header('Content-type: application/json; charset=UTF-8');
+?>
+
+<?php
 
 class FilesController extends \BaseController {
 	
@@ -13,44 +17,35 @@ class FilesController extends \BaseController {
 				
 		if(Input::get('dir')!=NULL) $this->dir = Input::get("dir");
 		else $this->dir = "/";
-		$this->curFile = Input::get('file');	
-		$this->initByAction(Input::get("action"));	
+		$this->curFile = Input::get('file');
 	}
-	/* __construct($action,$dir,$plainContent,$webContent,$name,$sourceDir,$destDir) */
-	private function initByAction($action){
+	
+
+	private function ActionOnFiles($action){
+		
+		$fileAction = new FilesProcess();	
 		
 		if($action=="save"){
-			$fileAction = new FilesProcess(Input::get("action"),Input::get("newdir"),Input::get("plainontent"),Input::get("webcontent"),"","","");	
-			$fileAction ->SaveFile();	
+			return $fileAction ->SaveFile(Input::get("newdir"),Input::get("webcontent"));
+				
 		}
 		if($action=="newfolder"){
-			$fileAction = new FilesProcess(Input::get("action"),Input::get("newdir"),"","","","","");	
-			if($fileAction ->CreateFolder()) $this->feedback ="Done!";
-			else $this->feedback = "Folder Create Fail!";
+			return $fileAction ->CreateFolder(Input::get("newdir"));
 		}
 		if($action=="newfile"){
-			$fileAction = new FilesProcess(Input::get("action"),Input::get("newdir"),"","","","","");	
-			$fileAction ->CreateFile();
+			return $fileAction ->CreateFile(Input::get("newdir"));
 		}
 		if($action=="rename"){
-			$fileAction = new FilesProcess(Input::get("action"),Input::get("newdir"),"","",Input::get("name"),"","");
-			$fileAction ->RenameFile();
+			return $fileAction ->RenameFile(Input::get("newdir"),Input::get("name"));
 		}
 		if($action=="copy"){
-			$fileAction = new FilesProcess(Input::get("action"),Input::get("newdir"),"","","",Input::get("sourcedir"),Input::get("destdir"));
-			$fileAction ->CopyFile(Input::get("sourcedir"),Input::get("destdir"));	
+			return $fileAction ->CopyFile(Input::get("sourcedir"),Input::get("destdir"));	
 		}
 		if($action=="cut"){
-			$fileAction = new FilesProcess(Input::get("action"),Input::get("newdir"),"","","",Input::get("sourcedir"),Input::get("destdir"));
-			$fileAction ->CutFile(Input::get("sourcedir"),Input::get("destdir"));	
+			return $fileAction ->CutFile(Input::get("sourcedir"),Input::get("destdir"));	
 		}
-		if($action=="deletefolder"){
-			$fileAction = new FilesProcess(Input::get("action"),Input::get("newdir"),"","","","","");
-			$fileAction ->DeleteFolder();
-		}
-		if($action=="deletefile"){
-			$fileAction = new FilesProcess(Input::get("action"),Input::get("newdir"),"","","","","");
-			$fileAction ->DeleteFile();
+		if($action=="delete"){
+			return $fileAction ->DeleteFile(Input::get("newdir"));
 		}
 	}
 	
@@ -82,8 +77,7 @@ class FilesController extends \BaseController {
 		if(filetype($this->dir.'/'.$file)=="link")
 			return true;	
 		else
-			return false;	
-		
+			return false;			
 	}
 	
 	private function fileCheck($file){
@@ -129,7 +123,12 @@ class FilesController extends \BaseController {
 			$fileContent = "";
 		}
 		$data = array('dir'=>$dir, 'curFile'=>$curFile, 'fileNames'=>$fliterNames,'menuType'=>$this->menuType,'fileContent'=>$fileContent,'isFile'=>$this->isFile());
-		return View::make('index',$data);
+		if(Request::ajax()){
+			return Response::json($this->ActionOnFiles(Input::get("action")));
+		}
+		else
+			//return Response::json(array('name' => 'Steve1', 'state' => 'CA1'));
+			return View::make('index',$data);
 	}
 
 	/**

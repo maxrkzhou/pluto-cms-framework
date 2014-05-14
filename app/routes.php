@@ -14,3 +14,4 @@
 Route::any('/','FilesController@index');
 Route::any('/{dir?}/{file?}','FilesController@__construct');
 
+

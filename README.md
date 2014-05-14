@@ -38,3 +38,10 @@ Version 2.3
 
 Update Date: 08/May/2014
 
+Version 2.4  
+     
+1.Improve the performance of the system.
+2.Add feedback message to each of the user action.  
+
+Update Date: 15/May/2014  
+
