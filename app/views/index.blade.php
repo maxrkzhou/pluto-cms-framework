@@ -10,7 +10,7 @@
 				@foreach($fileNames as $fileName => $fileImg)
             		<li>
                     	<a href="#" id="{{$fileName}}" class="{{$menuType[$fileName]}}" onclick="intepreteDir('<?php echo $dir?>','<?php echo $fileName ?>')">
-							{{HTML::image($fileImg,"",array('width'=>'20','height'=>'20'))}}
+							{{HTML::image($fileImg,"",array('width'=>'24','height'=>'24'))}}
 							{{$fileName}}
                         </a>
                     </li>

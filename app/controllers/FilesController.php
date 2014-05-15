@@ -26,8 +26,7 @@ class FilesController extends \BaseController {
 		$fileAction = new FilesProcess();	
 		
 		if($action=="save"){
-			return $fileAction ->SaveFile(Input::get("newdir"),Input::get("webcontent"));
-				
+			return $fileAction ->SaveFile(Input::get("newdir"),Input::get("webcontent"));			
 		}
 		if($action=="newfolder"){
 			return $fileAction ->CreateFolder(Input::get("newdir"));
@@ -41,11 +40,11 @@ class FilesController extends \BaseController {
 		if($action=="copy"){
 			return $fileAction ->CopyFile(Input::get("sourcedir"),Input::get("destdir"));	
 		}
-		if($action=="cut"){
-			return $fileAction ->CutFile(Input::get("sourcedir"),Input::get("destdir"));	
-		}
 		if($action=="delete"){
 			return $fileAction ->DeleteFile(Input::get("newdir"));
+		}
+		if($action=="overwriteconfirm"){
+			return $fileAction ->OverwriteConfirm(Input::get("destdir"));
 		}
 	}
 	
@@ -60,7 +59,7 @@ class FilesController extends \BaseController {
 		foreach($fileNames as $key=>$fileName){
 				if($this->isHiddenFile($fileName)||$this->linkCheck($fileName)) continue;
 				else if($this->fileCheck($fileName)){
-					$filterNames[$fileName] = 'img/file.png'; 
+					$filterNames[$fileName] = 'img/pdf-24_32.png'; 
 					$this->menuType[$fileName] = 'file';
 				}
 				else{ 

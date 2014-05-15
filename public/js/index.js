@@ -5,27 +5,6 @@ var sourceDir="";
 var actionOnFile = "";
 
 
-function saveFile(){
-	var dir = $("#dir").val();
-	var plainContent = CKEDITOR.instances.editor.document.getBody().getText();
-	var webContent = CKEDITOR.instances.editor.getData();
-
-  $.ajax({
-	type: "GET",
-	url: "/",
-	//dataType:"json",
-	data: {
-		newdir: dir,
-		action: "save",
-		webcontent: webContent
-	},
-  	success:function(data){
-		feedbackBox(data);
-  }});
-
-}
-
-
 /****************************************** Direction *******************************************************/
 /****************************************** Main Function ***************************************************/
 
@@ -66,6 +45,8 @@ function truncatePath(dir){
 
 /*Create a right click menu to the corresponding target: folder,file or back */
 $(function(){
+	var src = $("#dir").val()+"/"+clickedFileName;
+	var dst = $("#dir").val()+"/"+$("#rename").val();
     $.contextMenu({
         selector: '.file', 
         callback: function(key, options) {
@@ -89,7 +70,10 @@ $(function(){
 			"rename": {name: "Rename", icon: "rename", callback: function(key, opt){
 				$(function() {
 					$( "#renameBox" ).dialog({
-						 buttons: { "Ok": function() { renameFiles(); $(this).dialog("close");},
+						 buttons: { "Ok": function() {
+							  				renameFiles(src,dst); 
+											$(this).dialog("close");
+							  			  },
 									"Cancel": function(){$(this).dialog("close");} 
 						} 
 					});
@@ -119,8 +103,9 @@ $(function(){
 				getCopiedDir("copy");
 			}},
             "paste": {name: "Paste", icon: "paste", callback: function(key, opt){
-				if($.cookie("actionOnFile")=='copy') copyFiles();
-				if($.cookie("actionOnFile")=='cut') moveFiles();		
+				if($.cookie("actionOnFile")=='copy') //copyFiles();
+					OverwriteConfirm();
+				if($.cookie("actionOnFile")=='cut') OverwriteConfirmCut();		
 			}},
             "delete": {name: "Delete", icon: "delete",callback: function(key, opt){
 				$( "#deleteBox" ).dialog({
@@ -149,12 +134,34 @@ $(function(){
 /****************************************** Right Click Menu **********************************************/
 /****************************************** Functionality Functions ***************************************/
 
+function saveFile(){
+	var dir = $("#dir").val();
+	var plainContent = CKEDITOR.instances.editor.document.getBody().getText();
+	var webContent = CKEDITOR.instances.editor.getData();
+
+  $.ajax({
+	type: "GET",
+	url: "/",
+	dataType:"json",
+	data: {
+		newdir: dir,
+		action: "save",
+		webcontent: webContent
+	},
+  	success:function(data){
+		feedbackBox(data);
+  }});
+
+}
+
+
+
 function moveFiles(){
 	var destDir = $("#dir").val()+"/"+clickedFileName+"/"+$.cookie("srcFile");
 	$.ajax({
 	type: "GET",
 	url: "/",
-	//dataType:"json",
+	dataType:"json",
 	data: {
 		action: "cut",
 		sourcedir: $.cookie("srcDir"),
@@ -162,16 +169,88 @@ function moveFiles(){
 	},
   	success:function(data){
 		feedbackBox(data);
-  }});		
+  }
+   ,
+   error:function (jqXHR, textStatus, errorThrown){
+        console.log("Error:" + textStatus+ "," + errorThrown);
+    }
+  
+  });		
+}
+
+function OverwriteConfirmCut(){
+	var destDir = $("#dir").val()+"/"+clickedFileName+"/"+ $.cookie("srcFile");
+	$.ajax({
+	type: "GET",
+	dataType:"json",
+	url: "/",
+	data: {
+		action: "overwriteconfirm",
+		destdir: destDir
+	},
+  	success:function(data){
+		OverwirteBoxCut(data);
+  }
+  ,
+   error:function (jqXHR, textStatus, errorThrown){
+        console.log("Error:" + textStatus+ "," + errorThrown);
+    }
+  
+  });	
+}
+
+function OverwirteBoxCut(data){
+	if(data.status==false){
+		$("#overwriteBox" ).dialog({
+				open: function(){
+					$("#contentholder1").append(data.feedback);
+				},
+				 buttons: { 
+					"Ok": function(){
+							copyFiles();
+							deleteSourceFile();
+						$(this).dialog("close"); 
+					},
+					"Cancel": function(){
+						$(this).dialog("close");
+					} 
+			} 
+		});
+	}
+	if(data.status==true){
+		copyFiles();
+		deleteSourceFile();
+	}
 }
 
 
+function OverwriteConfirm(){
+	var destDir = $("#dir").val()+"/"+clickedFileName+"/"+ $.cookie("srcFile");
+	$.ajax({
+	type: "GET",
+	dataType:"json",
+	url: "/",
+	data: {
+		action: "overwriteconfirm",
+		destdir: destDir
+	},
+  	success:function(data){
+		overwriteBox(data);
+  }
+  ,
+   error:function (jqXHR, textStatus, errorThrown){
+        console.log("Error:" + textStatus+ "," + errorThrown);
+    }
+  
+  });	
+}
 
 function copyFiles(){
 	var destDir = $("#dir").val()+"/"+clickedFileName+"/"+ $.cookie("srcFile");
 	$.ajax({
 	type: "GET",
 	url: "/",
+	dataType:"json",
 	data: {
 		action: "copy",
 		sourcedir: $.cookie("srcDir"),
@@ -179,16 +258,22 @@ function copyFiles(){
 	},
   	success:function(data){
 		feedbackBox(data);
-  }});	
+  }
+  ,
+   error:function (jqXHR, textStatus, errorThrown){
+        console.log("Error:" + textStatus+ "," + errorThrown);
+    }
+  });	
 }
 
 
-function renameFiles(){
+function renameFiles(oldname,newname){
 	var dir = $("#dir").val()+"/"+clickedFileName;
 	var name = $("#dir").val()+"/"+$("#rename").val();
 	$.ajax({
 	type: "GET",
 	url: "/",
+	dataType:"json",
 	data: {
 		action: "rename",
 		newdir: dir,
@@ -200,25 +285,49 @@ function renameFiles(){
 }
 
 
+function deleteSourceFile(){
+	
+	$.ajax({
+		type: "GET",
+		url: "/",
+		dataType:"json",
+		data: {
+			action: "delete",
+			newdir: $.cookie("srcDir")
+	},
+  	success:function(data){
+		feedbackBox(data);
 
+  }
+  /*
+  ,
+   error:function (jqXHR, textStatus, errorThrown){
+        console.log("Error:" + textStatus+ "," + errorThrown);
+    }
+*/
+  });	
+}
 
 function deleteFiles(){
 	var dir = $("#dir").val()+"/"+clickedFileName;
 	$.ajax({
 	type: "GET",
 	url: "/",
+	dataType:"json",
 	data: {
 		action: "delete",
 		newdir: dir
 	},
   	success:function(data){
 		feedbackBox(data);
+
   }
+  /*
   ,
    error:function (jqXHR, textStatus, errorThrown){
         console.log("Error:" + textStatus+ "," + errorThrown);
     }
-
+*/
   });	
 	
 }
@@ -266,6 +375,7 @@ function createFolders(){
 function sendFolderName(newFileName){
 
 	var dir = $("#dir").val()+"/"+newFileName;
+	
 	$.ajax({
 	type: "GET",
 	url: "/",
@@ -304,6 +414,7 @@ function sendFileName(newFileName){
 function feedbackBox(data){
 	$("#feedbackBox" ).dialog({
 			open: function(){
+				document.getElementById("contentholder").innerHTML ="";
 				$("#contentholder").append(data.feedback);
 			},
 			 buttons: { 
@@ -318,4 +429,28 @@ function feedbackBox(data){
 				} 
 		} 
 	});
+}
+
+
+
+
+function overwriteBox(data){
+	if(data.status==false){
+		$("#overwriteBox" ).dialog({
+				open: function(){
+					document.getElementById("contentholder1").innerHTML ="";
+					$("#contentholder1").append(data.feedback);
+				},
+				 buttons: { 
+					"Ok": function(){
+							copyFiles();
+						$(this).dialog("close"); 
+					},
+					"Cancel": function(){
+						$(this).dialog("close");
+					} 
+			} 
+		});
+	}
+	if(data.status==true) copyFiles();
 }

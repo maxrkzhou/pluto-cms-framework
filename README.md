@@ -40,8 +40,18 @@ Update Date: 08/May/2014
 
 Version 2.4  
      
-1.Improve the performance of the system.
-2.Add feedback message to each of the user action.  
-
+1.Improve the performance of the system.     
+2.Add feedback message to each of the user action.     
+  
 Update Date: 15/May/2014  
+
+Version 2.5
+
+1.Upgrade the feature COPY FILE for file/folder name conflict bug.   
+2.Upgrade the feature CUT FILE for file/folder name conflict bug.
+
+Update Date: 16/May/2014
+
+  
+
 

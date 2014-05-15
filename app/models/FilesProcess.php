@@ -132,80 +132,97 @@ class FilesProcess extends Eloquent{
 
 	/**
 	 * Move the dirtectory/file from source location to target location
-	 * 
+	 * Warming: This function has bug if meet the file conflict problem
+	 *
 	 * @param $src the path where the srouce dirtectory/file is
 	 * @param $des the target location/path to move the folder/file  
 	 *
 	 * @return feedback message as an array to user
-	 */		
+	 */
+	/* 		
 	public function CutFile($src,$dst){
 		if(isset($src,$dst)){
-			if(!file_exists($dst)){
-				if(is_dir($src)){
-					$dir = opendir($src);
-					@rename($src,$dst);
-					closedir($dir);
-					$data = array(
-						'status'=> true,
-						'feedback'=> "The action proceed successfully."
-					);
-					return $data;
-				}else{
-					return $this->HelperRename($src,$dst);
-				}
-			}
-			else{
+			if(is_dir($src)){
+				$dir = opendir($src);
+				@rename($src,$dst);
+				closedir($src);
 				$data = array(
-					'status'=> false,
-					'feedback'=> "Warming: The name is already used in this location. 
-					              Do you want to overwrite the file?"
+					'status'=> true,
+					'feedback'=> "The action proceed successfully."
 				);
 				return $data;	
-			}
+			}else{
+				return $this->HelperRename($src,$dst);
+			}	
 		}
 	}	
-
+	*/
+	
+	
 	/**
 	 * Move the dirtectory/file from source location to target location
-	 * 
+	 * It also can merge two folders if the source folder has the same name
+	 * as the target folder
+	 *
 	 * @param $src the path where the srouce dirtectory/file is
 	 * @param $des the target location/path to move the folder/file  
 	 *
 	 * @return feedback message as an array to user
 	 */		
 	public function CopyFile($source,$dest) {
-		if(!file_exists($dest)){
-			if(is_file($source)){
-				return $this->HelperCopy($source,$dest);
-			}else{			
-				mkdir($dest, 0755);
-				foreach (
-				  $iterator = new RecursiveIteratorIterator(
-				  new RecursiveDirectoryIterator($source, RecursiveDirectoryIterator::SKIP_DOTS),
-				  RecursiveIteratorIterator::SELF_FIRST) as $item) {
-				  if ($item->isDir()) {
-					mkdir($dest . DIRECTORY_SEPARATOR . $iterator->getSubPathName());
-				  } else {
-					copy($item, $dest . DIRECTORY_SEPARATOR . $iterator->getSubPathName());
-				  }
+		
+		if(is_file($source)){
+			return $this->HelperCopy($source,$dest);
+		}else{
+			if(!file_exists($dest))	mkdir($dest, 0755);
+			foreach ($iterator = new RecursiveIteratorIterator(
+				     new RecursiveDirectoryIterator($source, RecursiveDirectoryIterator::SKIP_DOTS),
+				  	 RecursiveIteratorIterator::SELF_FIRST
+					 ) as $item) {
+				if ($item->isDir()) {
+					if(!file_exists($dest . DIRECTORY_SEPARATOR . $iterator->getSubPathName()))	
+						mkdir($dest . DIRECTORY_SEPARATOR . $iterator->getSubPathName());
 				}
-					$data = array(
-						'status'=> true,
-						'feedback'=> "The action proceed successfully."
-					);
-					return $data;
-			}
-		}
-		else{
+				else{
+					copy($item, $dest . DIRECTORY_SEPARATOR . $iterator->getSubPathName());
+				}
+			}//end foreach
+			$data = array(
+				'status'=> true,
+				'feedback'=> "The action proceed successfully."
+			);
+			return $data;		
+		}	
+	}
+	
+	/**
+	 * Check if the destination directory has the same name folder as the 
+	 * source folder, if yes it send a warming message to ask user to confirm
+	 * merge folder options.
+	 *
+	 * @param $dir the destination path of the folder  
+	 *
+	 * @return feedback message as an array to user
+	 */		
+	public function OverwriteConfirm($dir){
+		
+		if(file_exists($dir)){
 			$data = array(
 				'status'=> false,
 				'feedback'=> "Warming: The name is already used in this location. 
-				              Do you want to overwrite the file?"
+				              Do you want to merge the folder?"
+			);
+			return $data;	
+		}
+		else{
+			$data = array(
+				'status'=> true,
+				'feedback'=> "The file can be copy or cut."
 			);
 			return $data;	
 		}
 	}
-
+	
 	/**
 	 * Delete the dirtectory and all its sub-directory/files or files
 	 * 
